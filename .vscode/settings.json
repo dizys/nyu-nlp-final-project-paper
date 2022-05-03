@@ -10,5 +10,5 @@
   "[python]": {
     "editor.defaultFormatter": "ms-python.python"
   },
-  "cSpell.words": ["Maxent", "nltk"]
+  "cSpell.words": ["databank", "Maxent", "nltk", "NOMLEX", "Treebank"]
 }
