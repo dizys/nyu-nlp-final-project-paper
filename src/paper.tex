@@ -64,7 +64,7 @@
 
 \section{Introduction}
 
-NomBank (Meyers et al., 2004c) is a databank project at New York University that adds annotation layer of argument structure for instances in the Penn Treebank II corpus. Apart from the more commonly researched nominalizations of verbs and nominalizations of adjectives, it also covers relational nouns, partitive nouns and several other types of types of argument-taking nouns.
+NomBank (Meyers et al., 2004c) is a databank project at New York University that adds annotation layer of argument structure for instances in the Penn Treebank II corpus. Apart from the more commonly researched nominalizations of verbs and nominalizations of adjectives, it also covers relational nouns, partitive nouns and several other types of argument-taking nouns.
 
 BERT (Devlin et al., 2018) is a large-size language representation model trained on a large corpus of English text that can achieve state-of-the-art results on a variety of natural language processing tasks. BERT came a decade later than the release of NomBank and there's been little previous work in using it to conduct NomBank-based tasks and related experiments. However, as powerful as BERT is, its large parameters size makes it significantly more computationally expensive to train and use. On the other hand, DistilBERT is a distilled student model of BERT that retains 97\% of BERT's language understanding capabilities while being 40\% smaller and 60\% faster.
 
@@ -73,11 +73,9 @@ This paper presents a token classification approach using pre-trained DistilBERT
 In addition to the token classification approach above, this paper also experiments with question-answer task, transforming the original ARG1 finding task into the task of make the model answer the question "What is the ARG1 of this sentence?". The advantage of this adaptation is that the model would stably output exactly one ARG1 for each sentence whereas token classification could give each sentence 0 to N ARG1s.
 
 
+\section{Related Work}
 
-
-\section{Engines}
-
-To produce a PDF file, pdf\LaTeX{} is strongly recommended (over original \LaTeX{} plus dvips+ps2pdf or dvipdf). Xe\LaTeX{} also produces PDF files, and is especially suitable for text in non-Latin scripts.
+NomBank (Meyers et al., 2004c), as a databank extending the frames of NOMLEX and PropBank, annotates argument structures of common nouns similar to how PropBank annotates predicating verbs. The development of the NomBank corpus has supported the work of (Jiang and Ng, 2006) and (Liu and Ng, 2007). Each study tested the hypothesis that machine learning methodologies and representations used in verbal SRL (cf. (Pradhan et al., 2005)) can be ported to the task of NomBank SRL. (Liu and Ng, 2007) reports an overall f-measure score of 0.7283 using automatically generated parse trees, demonstrating that modest performance can be achieved using basic approaches developed in the verbal domain. Both studies also investigated the use of features specific to the task of nominal SRL, but observed only marginal performance gains.
 
 \section{Preamble}
 
