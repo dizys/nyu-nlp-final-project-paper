@@ -165,12 +165,28 @@ Even though for deep neural network input wouldn't need much feature engineering
   \label{fig:dataset-one-qa-sample}
 \end{figure}
 
-A special treatment for the question-answering pipeline is that the ARG1 label has to be transformed into the answer location (the start and end indexes). And the question prompt for every sample is the same "What is the ARG1 of the sentence?". The same question prompt is used for validation and testing. Figure \ref{fig:dataset-one-qa-sample} is one processed sample sentence for the QA task, inputs are padded in batched and stacked as matrix to be able to be processed by the model in batches. \verb|input_ids| are the numerized tokens of both the question prompt and the input text concatenated by \verb|102|. \verb|attention_mask| is the attention the model should be given to the tokens, \verb|0| means the token should not be considered by the model. \verb|start_position| and \verb|end_position| are the start and end indexes of the answer in the input text.
+A special treatment for the question-answering pipeline is that the ARG1 label has to be transformed into the answer location (the start and end indexes). And the question prompt for every sample is the same "What is the ARG1 of the sentence?". The exact same question prompt is used for validation and testing. Figure \ref{fig:dataset-one-qa-sample} is one processed sample sentence for the QA task, inputs are padded in batch and stacked as matrix to be able to be processed by the model in batches. \verb|input_ids| are the numerized tokens of both the question prompt and the input text concatenated by \verb|102|. \verb|attention_mask| is the attention the model should be given to the tokens, \verb|0| means the token should not be considered by the model. \verb|start_position| and \verb|end_position| are the start and end indexes of the answer in the input text.
 
 
 \subsection{Experiment Settings}
 
 All deep models used in this paper are implemented in PyTorch and with HuggingFace transformers libraries. The pre-trained models are fine-tuned on a single NVIDIA P100 (16GB) GPU on the Google Colab platform. The deep models are fine-tuned for 10 epochs with the learning rate of \verb|2e-5| and weight decay of \verb|0.01|. For token classification tasks, the batch size is 64. For question-answering tasks, the input would be bigger with the question prompt, so the batch size is set to 32 to be able to fit into the GPU's RAM.
+
+\subsection{Evaluation Metrics}
+
+To evaluate the performance of the model, we used precision, recall and F1-score as evaluation metrics. The precision and recall are calculated by the number of correct predictions divided by the total number of predictions. The F1-score is calculated by the harmonic mean of precision and recall. Below are the formulas for calculating the precision, recall and F1-score, in which TP is the number of true positives, FP is the number of false positives, FP is the number of false positives and FN is the number of false negatives.
+
+\begin{equation}
+  Precision={TP\over{TP+FP}}
+\end{equation}
+
+\begin{equation}
+  Recall={TP\over{TP+FN}}
+\end{equation}
+
+\begin{equation}
+  F1={2\times{Precision}\times{Recall}\over{Precision+Recall}}
+\end{equation}
 
 
 \section*{Acknowledgements}
