@@ -60,27 +60,25 @@
 \begin{document}
 \maketitle
 \begin{abstract}
-  This document is a supplement to the general instructions for *ACL authors. It contains instructions for using the \LaTeX{} style files for ACL conferences.
-  The document itself conforms to its own specifications, and is therefore an example of what your manuscript should look like.
-  These instructions should be used both for papers submitted for review and for final versions of accepted papers.
+  This paper presents our attempts of multiple pipelines to find ARG1 of partitive nouns in NomBank with DistilBERT. NomBank is an annotation project at New York University based on Penn Treebank II corpus. Finding ARG1 of partitive nouns in the databank is an semantic role labeling (SRL) problem, which here we treated as a token classification task or a question-answering task. We adopted a knowledge-distilled version of BERT, DistilBERT, into our SRL pipeline, leveraging the knowledge of English Wikipedia and Toronto Book Corpus that the model was originally trained on. For the \% dataset, we achieved an F1 score of 0.9267 on the test set. And for the partitive dataset, we achieved an F1 score of 0.7945 on the test set.
 \end{abstract}
 
 \section{Introduction}
 
 NomBank (Meyers et al., 2004c) is a databank project at New York University that adds annotation layer of argument structure for instances in the Penn Treebank II corpus. Apart from the more commonly researched nominalizations of verbs and nominalizations of adjectives, it also covers relational nouns, partitive nouns and several other types of argument-taking nouns.
 
-More recently, the NLP community has seen huge popularity in heavily adopting pretraining-based langauge models. BERT (Devlin et al., 2018) is a large-size language representation model trained on a large corpus of English text that can achieve state-of-the-art results on a variety of natural language processing tasks. BERT came a decade later than the release of NomBank and there's been little previous work using it to conduct NomBank-based tasks and related experiments. However, as powerful as BERT is, its large parameters size makes it significantly more computationally expensive to train and use. On the other hand, DistilBERT is a distilled student model of BERT that retains 97\% of BERT's language understanding capabilities while being 40\% smaller and 60\% faster. This makes it a great candidate to train when facing with limited resources.
+More recently, the NLP community has seen huge popularity in heavily adopting pretraining-based langauge models in attempt to transfer knowledge learned from large corpus into more specific tasks. BERT (Devlin et al., 2018) is a large-size language representation model trained on a large corpus of English text that can achieve state-of-the-art results on a variety of natural language processing tasks. BERT came a decade later than the release of NomBank and there's been little previous work using it to conduct NomBank-based tasks and related experiments. However, as powerful as BERT is, its large parameters size makes it significantly more computationally expensive to train and use. On the other hand, DistilBERT is a distilled student model of BERT that retains 97\% of BERT's language understanding capabilities while being 40\% smaller and 60\% faster. This makes it a great candidate to train when facing with limited resources.
 
-This paper presents a token classification approach using pre-trained DistilBERT to find ARG1 of partitive nouns in NomBank. It focuses on partitive nouns (nouns that are used to describe a part or quantity of something) and the partitive task. The task is described as finding one argument (ARG1) of \% (the percent sign), or in other words, finding the none group that is being sub-divided or quantified over. For example, for the sentence "Output in the energy sector rose 3.8\%.", the ARG1 to be found is "Output" since it is the partitive noun that "3.8\%" is referring to. This task can be translated into a binary classification problem on each token in the sentence where the model predicts whether the token is an ARG1 or not.
+This paper presents multiple token classification approaches using pre-trained DistilBERT to find ARG1 of partitive nouns in NomBank. It focuses on partitive nouns (nouns that are used to describe a part or quantity of something) and the partitive task. The task is described as finding one argument (ARG1) of \% (the percent sign), or in other words, finding the none group that is being sub-divided or quantified over. For example, for the sentence "Output in the energy sector rose 3.8\%.", the ARG1 to be found is "Output" since it is the partitive noun that "3.8\%" is referring to. This task can be translated into a binary classification problem on each token in the sentence where the model predicts whether the token is an ARG1 or not.
 
-In addition to the token classification approach above, this paper also experiments with question-answer task, transforming the original ARG1 finding task into the task of make the model answer the question "What is the ARG1 of this sentence?". The advantage of this adaptation is that the model would stably output exactly one ARG1 for each sentence whereas token classification could give each sentence 0 to N ARG1s.
+In addition to the token classification approaches above, this paper also experiments with question-answer task, transforming the original ARG1 finding task into the task of make the model answer the question "What is the ARG1 of this sentence?". The advantage of this adaptation is that the model would stably output exactly one ARG1 for each sentence whereas token classification could give each sentence 0 to N ARG1s.
 
 
 \section{Related Work}
 
 NomBank (Meyers et al., 2004c), as a databank extending the frames of NOMLEX and PropBank, annotates argument structures of common nouns similar to how PropBank annotates predicating verbs. The development of the NomBank corpus has made several other work on argument structure extraction more accessible. Jiang and Ng (2006) attempts the first NomBank-based automatic semantic role labeling system after the databank's release. Ping (2006)  adapts a PropBank-based SRL system to the SRL task of NomBank, achieving an overall F1 score of 72.73 on section 23 of the NomBank corpus.
 
-BERT, or Bidirectional Encoder Representations from Transformers (Devlin et al., 2018), has shown state-of-the-art results on many NLP tasks. There have been many attempts to compress BERT into a smaller model, among which DistilBERT (Sanh et al., 2019) successfully reduces the size of a BERT model by 40\%, while retaining 97\% of its language understanding capabilities and being 60\% faster, leveraging  knowledge distillation (Bucila et al., 2006, Hinton et al., 2015) during the pre-training phase.
+BERT, or Bidirectional Encoder Representations from Transformers (Devlin et al., 2018), has shown state-of-the-art results on many NLP tasks. The BERT base model has 110 million trainable parameters and was trained on a concentration of English Wikipedia and Toronto Book Corpus. There have been many attempts to compress BERT into a smaller model, among which DistilBERT (Sanh et al., 2019) successfully reduces the size of a BERT model by 40\%, while retaining 97\% of its language understanding capabilities and being 60\% faster, leveraging  knowledge distillation (Bucila et al., 2006, Hinton et al., 2015) during the pre-training phase.
 
 More recent development on semantic role labeling (SRL) has shifted from feature engineering to architecture-based modeling leveraging deep neural networks (Collobert
 et al., 2011). Several recent notable approaches suggest only using raw tokenized text as input and let the model learn the features from the text itself (He et al., 2017; Sahin and Steedman, 2018; Marcheggiani et al., 2017; Strubell et al., 2018). This end-to-end approach allows the model to easily generalize from one SRL task to another without very task-specific feature engineering effort.
@@ -105,12 +103,16 @@ characterize the class-specific expectations for the distribution. To perform we
 
 The simplest pipeline for finding ARG1 of partitive nouns in NomBank assumes that the input text is raw and unprocessed. The pipeline first tokenizes the text using the tokenizer provided by DistilBERT. Then, the model predicts whether each token is an ARG1 or not. The pipeline is illustrated in the following figure \ref{fig:simplest-arg1-pipeline}.
 
+However, the NomBank dataset provisions text as already tokenized. The way the tokenizer provided by DistilBERT is often more fine-grained than how the NomBank dataset provides the text, causing some aligning issues. We fix this by align the tokens using \verb|word_ids| in the tokenization output. This is explained in detailed in section \ref{section:data-preprocessing}.
+
 \begin{figure}[h]
   \centering
   \includegraphics[width=\linewidth]{assets/simplest-arg1-pipeline.png}
   \caption{The simplest pipeline for finding ARG1 of partitive nouns in NomBank}
   \label{fig:simplest-arg1-pipeline}
 \end{figure}
+
+In practice, this pipeline has the tendency of over predicting ARG1 labels. It predicts on a per-token basis, making classification of whether the token is an ARG1 or not on every token, thus possibly producing 0 to multiple ARG1s in one sentence. It is shown by our experiments that the deep models are more common to produce more than 1 ARG1s in one sentence. The ground truth, however, is one and only one ARG1 per sentence. A treatment of this inconsistency is to always force one ARG1 by the logits output of the deep neural network. We assign the token with the largest logit value in the output vector for the whole sentence to be the ARG1.
 
 \subsection{Feature Enhanced Pipeline}
 
@@ -136,7 +138,7 @@ Apart from token classification, we also explored question-answer approach which
   \label{fig:qa-arg1-pipeline}
 \end{figure}
 
-The output of the question-answering model is the location (start index and end index) of the predicted answer. By locating the token on the original input token list with the start index and end index, we can reconstruct the ARG1 label of the sentence. The answer relocation is a bit more complicated due to the tokenization discrepancies between the original input and the tokenized input. This is explained in detailed in section \ref{section:data-preprocessing}.
+The output of the question-answering model is the location (start index and end index) of the predicted answer. By locating the token on the original input token list with the start index and end index, we can reconstruct the ARG1 label of the sentence. The answer relocation is a bit more complicated due to the tokenization discrepancies between the original input and the tokenized input. Again, this is explained in detailed in section \ref{section:data-preprocessing}.
 
 \section{Experiments}
 
@@ -192,7 +194,44 @@ To evaluate the performance of the model, we used precision, recall and F1-score
 
 Apart from the original \% task, we also experimented the token classification of DistilBERT on the combined dataset of \% and partitive datasets of NomBank. Different from the \% dataset, there's not only ARG1 but also ARG0, ARG2... and more role labels in the partitive dataset. In order to adopt the same pipelines, we preprocessed the partitive dataset into the same format as the \% dataset and combine them together into a larger dataset. The larger dataset is also split into training, dev and test set. The training set has 12991 sentences or 380247 words, the dev set has 426 sentences or 12671 words, and the test set has 746 sentences or 21536 words.
 
-\section*{Acknowledgements}
+\section{Experiment Results}
+
+\begin{table*}
+  \centering
+  \begin{tabular}{c||c|c|c}
+    \hline
+    \textbf{Model}        & \textbf{Precision} & \textbf{Recall} & \textbf{F1-Score} \\
+    \hline
+    MaxEnt Baseline       & {71.88\%}          & {61.33\%}       & {66.19\%}         \\
+    DistilBERT            & {93.75\%}          & {90.00\%}       & {91.84\%}         \\
+    DistilBERT (POS+BIO)  & {93.19\%}          & {91.33\%}       & {92.25\%}         \\
+    DistilBERT (QA)       & {92.00\%}          & {92.00\%}       & {92.00\%}         \\
+    DistilBERT (ONE ARG1) & {92.67\%}          & {92.67\%}       & {92.67\%}         \\
+    \hline
+  \end{tabular}
+  \caption{Precision, Recall and F1-Score on the \% dataset}
+  \label{tab:results-on-first-dataset}
+\end{table*}
+
+\begin{table*}
+  \centering
+  \begin{tabular}{c||c|c|c}
+    \hline
+    \textbf{Model}  & \textbf{Precision} & \textbf{Recall} & \textbf{F1-Score} \\
+    \hline
+    MaxEnt Baseline & {55.33\%}          & {36.02\%}       & {43.64\%}         \\
+    DistilBERT      & {80.49\%}          & {78.43\%}       & {79.45\%}         \\
+    \hline
+  \end{tabular}
+  \caption{Precision, Recall and F1-Score on the partitive dataset}
+  \label{tab:results-on-partitive-dataset}
+\end{table*}
+
+\section{Conclusion}
+
+\section{Future Work}
+
+\section*{References}
 
 This document has been adapted
 by Steven Bethard, Ryan Cotterell and Rui Yan
@@ -216,12 +255,5 @@ Additional elements were taken from the formatting instructions of the \emph{Int
 % Entries for the entire Anthology, followed by custom entries
 \bibliography{anthology,custom}
 \bibliographystyle{acl_natbib}
-
-\appendix
-
-\section{Example Appendix}
-\label{sec:appendix}
-
-This is an appendix.
 
 \end{document}
