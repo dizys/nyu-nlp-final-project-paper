@@ -194,6 +194,8 @@ To evaluate the performance of the model, we used precision, recall and F1-score
 
 Apart from the original \% task, we also experimented the token classification of DistilBERT on the combined dataset of \% and partitive datasets of NomBank. Different from the \% dataset, there's not only ARG1 but also ARG0, ARG2... and more role labels in the partitive dataset. In order to adopt the same pipelines, we preprocessed the partitive dataset into the same format as the \% dataset and combine them together into a larger dataset. The larger dataset is also split into training, dev and test set. The training set has 12991 sentences or 380247 words, the dev set has 426 sentences or 12671 words, and the test set has 746 sentences or 21536 words.
 
+The partitive dataset, in comparison with the \% dataset, has more distractions in terms of ARG1 finding task since ARG0, ARG2 and other labels are given. Also, there could be more than one or zero ARG1s in one sentence, thus making our QA and ONE ARG1 pipelines useless since the tendency of producing only one ARG1 is no longer preferred.
+
 \section{Experiment Results}
 
 \begin{table*}
@@ -217,15 +219,24 @@ Apart from the original \% task, we also experimented the token classification o
   \centering
   \begin{tabular}{c||c|c|c}
     \hline
-    \textbf{Model}  & \textbf{Precision} & \textbf{Recall} & \textbf{F1-Score} \\
+    \textbf{Model}       & \textbf{Precision} & \textbf{Recall} & \textbf{F1-Score} \\
     \hline
-    MaxEnt Baseline & {55.33\%}          & {36.02\%}       & {43.64\%}         \\
-    DistilBERT      & {80.49\%}          & {78.43\%}       & {79.45\%}         \\
+    MaxEnt Baseline      & {55.33\%}          & {36.02\%}       & {43.64\%}         \\
+    DistilBERT           & {80.49\%}          & {78.43\%}       & {79.45\%}         \\
+    DistilBERT (POS+BIO) & {81.53\%}          & {76.94\%}       & {79.16\%}         \\
     \hline
   \end{tabular}
   \caption{Precision, Recall and F1-Score on the partitive dataset}
   \label{tab:results-on-partitive-dataset}
 \end{table*}
+
+We experimented with multiple ARG1 finding models and pipelines on both \% dataset and partitive dataset from the NomBank corpus. The results are shown in Table \ref{tab:results-on-first-dataset} and Table \ref{tab:results-on-partitive-dataset} respectively.
+
+For the partitive dataset, because there could be zero or multiple ARG1s in one sentence for ground truth, there's no need to force model to predict only one ARG1, thus we abandoned the QA and ONE ARG1 pipelines for the partitive dataset.
+
+As shown by Table \ref{tab:results-on-first-dataset}, the MaxEnt baseline achieved an F1 score of \verb|0.6619|. The DistilBERT models perform much better than the MaxEnt Baseline model on the \% dataset generally even when given less features, achieving an F1 score of 0.9184 for the basic pipeline,  \verb|0.9225| for the feature-enhanced pipeline,  \verb|0.92| for the QA pipeline and  \verb|0.9267| for the ONE ARG1 pipeline. The performance differences between different DistilBERT-based pipelines, however, are not significant. POS tags and NG-BIO tags likely don't have much effect on the performance of the model.
+
+As for the partitive dataset, it is also shown by Table \ref{tab:results-on-partitive-dataset} that the DistilBERT model performs better than the MaxEnt Baseline model that achieved an F1 score of  \verb|0.4364|. The basic pipeline achieved an F1 score of  \verb|0.7945|. It is also observed that the POS tags and NG-BIO tags features didn't have significant impact on the performance of the model, achieving an F1 score of only  \verb|0.7916|.
 
 \section{Conclusion}
 
