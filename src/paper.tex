@@ -10,6 +10,8 @@
 % Standard package includes
 \usepackage{times}
 \usepackage{latexsym}
+\usepackage{float}
+\usepackage{graphicx}
 
 % For proper rendering and hyphenation of words containing Latin characters (including in bib files)
 \usepackage[T1]{fontenc}
@@ -80,161 +82,69 @@ NomBank (Meyers et al., 2004c), as a databank extending the frames of NOMLEX and
 
 BERT, or Bidirectional Encoder Representations from Transformers (Devlin et al., 2018), has shown state-of-the-art results on many NLP tasks. There have been many attempts to compress BERT into a smaller model, among which DistilBERT (Sanh et al., 2019) successfully reduces the size of a BERT model by 40\%, while retaining 97\% of its language understanding capabilities and being 60\% faster, leveraging  knowledge distillation (Bucila et al., 2006, Hinton et al., 2015) during the pre-training phase.
 
-\section{Preamble}
+More recent development on semantic role labeling (SRL) has shifted from feature engineering to architecture-based modeling leveraging deep neural networks (Collobert
+et al., 2011). Several recent notable approaches suggest only using raw tokenized text as input and let the model learn the features from the text itself (He et al., 2017; Sahin and Steedman, 2018; Marcheggiani et al., 2017; Strubell et al., 2018). This end-to-end approach allows the model to easily generalize from one SRL task to another without very task-specific feature engineering effort.
 
-The first line of the file must be
-\begin{quote}
-  \begin{verbatim}
-\documentclass[11pt]{article}
-\end{verbatim}
-\end{quote}
+\section{ARG1 Finding Pipelines}
 
-To load the style file in the review version:
-\begin{quote}
-  \begin{verbatim}
-\usepackage[review]{acl}
-\end{verbatim}
-\end{quote}
-For the final version, omit the \verb|review| option:
-\begin{quote}
-  \begin{verbatim}
-\usepackage{acl}
-\end{verbatim}
-\end{quote}
+\subsection{Maximum Entropy Baseline Pipeline}
 
-To use Times Roman, put the following in the preamble:
-\begin{quote}
-  \begin{verbatim}
-\usepackage{times}
-\end{verbatim}
-\end{quote}
-(Alternatives like txfonts or newtx are also acceptable.)
+The baseline we use is a maximum entropy machine learning method in a token-by-token classification manner. Maximum entropy is a general technique for estimating probability distributions from data. Labeled training data
+is used to derive a set of constraints for the model that
+characterize the class-specific expectations for the distribution. To perform well, the model relies on the good representation of the features we feed it. In this paper, we select features including the word stem, the neighboring 2 words, POS tags, NG-BIO tags, whether capitalized and the position of the word in the sentence.
 
-Please see the \LaTeX{} source of this document for comments on other packages that may be useful.
+\subsection{Plain Raw Input Pipeline}
+\label{section:plain-pipeline}
 
-Set the title and author using \verb|\title| and \verb|\author|. Within the author list, format multiple authors using \verb|\and| and \verb|\And| and \verb|\AND|; please see the \LaTeX{} source for examples.
+The simplest pipeline for finding ARG1 of partitive nouns in NomBank assumes that the input text is raw and unprocessed. The pipeline first tokenizes the text using the tokenizer provided by DistilBERT. Then, the model predicts whether each token is an ARG1 or not. The pipeline is illustrated in the following figure \ref{fig:simplest-arg1-pipeline}.
 
-By default, the box containing the title and author names is set to the minimum of 5 cm. If you need more space, include the following in the preamble:
-\begin{quote}
-  \begin{verbatim}
-\setlength\titlebox{<dim>}
-\end{verbatim}
-\end{quote}
-where \verb|<dim>| is replaced with a length. Do not set this length smaller than 5 cm.
-
-\section{Document Body}
-
-\subsection{Footnotes}
-
-Footnotes are inserted with the \verb|\footnote| command.\footnote{This is a footnote.}
-
-\subsection{Tables and figures}
-
-See Table~\ref{tab:accents} for an example of a table and its caption.
-\textbf{Do not override the default caption sizes.}
-
-\begin{table}
+\begin{figure}[h]
   \centering
-  \begin{tabular}{lc}
-    \hline
-    \textbf{Command} & \textbf{Output} \\
-    \hline
-    \verb|{\"a}|     & {\"a}           \\
-    \verb|{\^e}|     & {\^e}           \\
-    \verb|{\`i}|     & {\`i}           \\
-    \verb|{\.I}|     & {\.I}           \\
-    \verb|{\o}|      & {\o}            \\
-    \verb|{\'u}|     & {\'u}           \\
-    \verb|{\aa}|     & {\aa}           \\\hline
-  \end{tabular}
-  \begin{tabular}{lc}
-    \hline
-    \textbf{Command} & \textbf{Output} \\
-    \hline
-    \verb|{\c c}|    & {\c c}          \\
-    \verb|{\u g}|    & {\u g}          \\
-    \verb|{\l}|      & {\l}            \\
-    \verb|{\~n}|     & {\~n}           \\
-    \verb|{\H o}|    & {\H o}          \\
-    \verb|{\v r}|    & {\v r}          \\
-    \verb|{\ss}|     & {\ss}           \\
-    \hline
-  \end{tabular}
-  \caption{Example commands for accented characters, to be used in, \emph{e.g.}, Bib\TeX{} entries.}
-  \label{tab:accents}
-\end{table}
+  \includegraphics[width=\linewidth]{assets/simplest-arg1-pipeline.png}
+  \caption{The simplest pipeline for finding ARG1 of partitive nouns in NomBank}
+  \label{fig:simplest-arg1-pipeline}
+\end{figure}
 
-\subsection{Hyperlinks}
+\subsection{Feature Enhanced Pipeline}
 
-Users of older versions of \LaTeX{} may encounter the following error during compilation:
-\begin{quote}
-  \tt\verb|\pdfendlink| ended up in different nesting level than \verb|\pdfstartlink|.
-\end{quote}
-This happens when pdf\LaTeX{} is used and a citation splits across a page boundary. The best way to fix this is to upgrade \LaTeX{} to 2018-12-01 or later.
+NomBank provides a number of features for each token in the databank, including POS tags and NG-BIO tags. They could be helpful for the task of finding ARG1 of partitive nouns. The pipeline below incorporate these features to the raw text input in \ref{section:plain-pipeline} to find ARG1 of partitive nouns. The pipeline is illustrated in the figure \ref{fig:enhanced-arg1-pipeline}.
 
-\subsection{Citations}
-
-\begin{table*}
+\begin{figure}[h]
   \centering
-  \begin{tabular}{lll}
-    \hline
-    \textbf{Output}           & \textbf{natbib command} & \textbf{Old ACL-style command} \\
-    \hline
-    \citep{Gusfield:97}       & \verb|\citep|           & \verb|\cite|                   \\
-    \citealp{Gusfield:97}     & \verb|\citealp|         & no equivalent                  \\
-    \citet{Gusfield:97}       & \verb|\citet|           & \verb|\newcite|                \\
-    \citeyearpar{Gusfield:97} & \verb|\citeyearpar|     & \verb|\shortcite|              \\
-    \hline
-  \end{tabular}
-  \caption{\label{citation-guide}
-    Citation commands supported by the style file.
-    The style is based on the natbib package and supports all natbib citation commands.
-    It also supports commands defined in previous ACL style files for compatibility.
-  }
-\end{table*}
+  \includegraphics[width=\linewidth]{assets/enhanced-arg1-pipeline.png}
+  \caption{The feature-enhanced pipeline for finding ARG1 of partitive nouns in NomBank}
+  \label{fig:enhanced-arg1-pipeline}
+\end{figure}
 
-Table~\ref{citation-guide} shows the syntax supported by the style files.
-We encourage you to use the natbib styles.
-You can use the command \verb|\citet| (cite in text) to get ``author (year)'' citations, like this citation to a paper by \citet{Gusfield:97}.
-You can use the command \verb|\citep| (cite in parentheses) to get ``(author, year)'' citations \citep{Gusfield:97}.
-You can use the command \verb|\citealp| (alternative cite without parentheses) to get ``author, year'' citations, which is useful for using citations within parentheses (e.g. \citealp{Gusfield:97}).
+Because the original pre-trained DistilBERT model does not take extra features including POS and NG-BIO tags as input, we have to modified the token classification model and alter the last linear layer, concatenating the original BERT hidden layer output with the extra features, then doing token classification through the linear layer.
 
-\subsection{References}
+\subsection{Question-Answer Pipeline}
 
-\nocite{Ando2005,borschinger-johnson-2011-particle,andrew2007scalable,rasooli-tetrault-2015,goodman-etal-2016-noise,harper-2014-learning}
+Apart from token classification, we also explored question-answer approach which rephrase the original problem into a QA problem. Question-answering, just as the plain token classification approach, assumes tokenized input and no extra features. Additionally, question-answering tasks also requires a question prompt and answer location for each sample while training. The pipeline is illustrated in the figure \ref{fig:qa-arg1-pipeline}.
 
-The \LaTeX{} and Bib\TeX{} style files provided roughly follow the American Psychological Association format.
-If your own bib file is named \texttt{custom.bib}, then placing the following before any appendices in your \LaTeX{} file will generate the references section for you:
-\begin{quote}
-  \begin{verbatim}
-\bibliographystyle{acl_natbib}
-\bibliography{custom}
-\end{verbatim}
-\end{quote}
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=\linewidth]{assets/qa-arg1-pipeline.png}
+  \caption{The question-answering pipeline for finding ARG1 of partitive nouns in NomBank}
+  \label{fig:qa-arg1-pipeline}
+\end{figure}
 
-You can obtain the complete ACL Anthology as a Bib\TeX{} file from \url{https://aclweb.org/anthology/anthology.bib.gz}.
-To include both the Anthology and your own .bib file, use the following instead of the above.
-\begin{quote}
-  \begin{verbatim}
-\bibliographystyle{acl_natbib}
-\bibliography{anthology,custom}
-\end{verbatim}
-\end{quote}
+The output of the question-answering model is the location (start index and end index) of the predicted answer. By locating the token on the original input token list with the start index and end index, we can reconstruct the ARG1 label of the sentence.
 
-Please see Section~\ref{sec:bibtex} for information on preparing Bib\TeX{} files.
+\section{Experiments}
 
-\subsection{Appendices}
+\subsection{Dataset}
 
-Use \verb|\appendix| before any appendix section to switch the section numbering over to letters. See Appendix~\ref{sec:appendix} for an example.
+The dataset we use in this task is part of the NomBank that specifically focus on partitive nouns. In the dataset is split into training, dev and test set. The training set has 2367 sentences or 66186 words, the dev set has 83 sentences or 2225 words, and the test set has 150 sentences or 4276 words. Each token in a sentence takes a line in the data file, the line containing the token itself, the POS tag, the NG-BIO tag, the index of the sentence and the index of the token in the sentence. The semantic role label is put at the end of each line, if the label is not one of "ARG1", "PRED" and "SUPPORT", then it's omitted. Figure \ref{fig:dataset-one-sample} is one sample sentence from the training dataset.
 
-\section{Bib\TeX{} Files}
-\label{sec:bibtex}
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=\linewidth]{assets/dataset-one-sample.png}
+  \caption{One sample sentence in the training dataset}
+  \label{fig:dataset-one-sample}
+\end{figure}
 
-Unicode cannot be used in Bib\TeX{} entries, and some ways of typing special characters can disrupt Bib\TeX's alphabetization. The recommended way of typing special characters is shown in Table~\ref{tab:accents}.
-
-Please ensure that Bib\TeX{} records contain DOIs or URLs when possible, and for all the ACL materials that you reference.
-Use the \verb|doi| field for DOIs and the \verb|url| field for URLs.
-If a Bib\TeX{} entry has a URL or DOI field, the paper title in the references section will appear as a hyperlink to the paper, using the hyperref \LaTeX{} package.
+In a sentence in the \% dataset, the PRED labels \% symbol, the ARG1 is the partitive noun that \% symbol refers to, and the SUPPORT marks the word connecting the ARG1 and the PRED. It is guaranteed that there is one and only one ARG1 in each sentence of the dataset.
 
 \section*{Acknowledgements}
 
