@@ -10,5 +10,32 @@
   "[python]": {
     "editor.defaultFormatter": "ms-python.python"
   },
-  "cSpell.words": ["databank", "Maxent", "nltk", "NOMLEX", "Treebank"]
+  "cSpell.words": [
+    "Baldridge",
+    "Bucila",
+    "Colab",
+    "Collobert",
+    "databank",
+    "Devlin",
+    "DistilBERT",
+    "Jiang",
+    "logit",
+    "logits",
+    "Marcheggiani",
+    "Maxent",
+    "nltk",
+    "nominalization",
+    "nominalizations",
+    "NOMLEX",
+    "numerized",
+    "opennlp",
+    "pretraining",
+    "Sahin",
+    "Sanh",
+    "Steedman",
+    "Strubell",
+    "tokenize",
+    "tokenizes",
+    "Treebank"
+  ]
 }
