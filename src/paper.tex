@@ -8,6 +8,7 @@
 \usepackage[]{acl}
 
 % Standard package includes
+\usepackage{natbib}
 \usepackage{lastpage}
 \usepackage{fancyhdr}
 \usepackage{times}
@@ -275,12 +276,16 @@ Based on the performance decrease observed in the partitive dataset, we also con
 
 \section{Discussion and Future Work}
 
+The two extra POS tags and NG-BIO tags features didn't seem to improve the performance of the model in a statistically significant way. This could be due to the huge amount of knowledge the deep model has already gained from the pre-training stage, thus rendering the addition of these two features insignificant. However, feature engineering in general could possibly be helpful in improving the model. We could investigate more selections of features and try to incorporate them into the pipelines we have developed. The features that are not covered by the pre-trained DistilBERT models could help the model in the task of finding ARG1.
 
+Question-answering pipeline is a novel approach to the task of finding ARG1 of partitive nouns in NomBank. As mentioned, what we haven't explored enough on is the question prompt we use to ask the model to find ARG1. The question prompt can be any text, but the way we framed the question could be the key to how well the model would comprehend the task and execute it. For future work, we'd like to explore more kinds of question prompts and analyze the effect of different question prompts on the performance of the model.
 
-\section*{References}
+The system we developed has shown good performance on the \% dataset. However, in real-world applications, like shown on the partitive dataset, the noise could majorly impact the performance of the model. The directions of reducing the impact of noise could be exploring preprocessing techniques in attempt to remove the noise, or architectural changes in the model to make it more robust to noise. A plausible idea is to use BERT output as an embedding of the token, then feed it with other feature to an RNN model to predict the ARG1. More trainable layers for the token classification task could make the model more robust to noise.
+
+% \printbibliography
 
 % Entries for the entire Anthology, followed by custom entries
-\bibliography{anthology,custom}
-\bibliographystyle{acl_natbib}
+\bibliographystyle{plain}
+\bibliography{refs}
 
 \end{document}
