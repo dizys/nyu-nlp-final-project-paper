@@ -263,7 +263,7 @@ By a closer look to where the model struggles to produce correct predictions, Fi
 
 \subsection{Partitive Dataset}
 
-As for the partitive dataset, it is also shown by Table \ref{tab:results-on-partitive-dataset} that the DistilBERT model performs better than the MaxEnt Baseline model that achieved an F1 score of \verb|0.4364|. The basic pipeline achieved an F1 score of  \verb|0.7945|. It is also observed that the POS tags and NG-BIO tags features didn't have statistically significant improvement on the performance of the model, achieving an F1 score of only \verb|0.7916|. When compared to the \% dataset, the decrease in performance is expected since the partitive dataset has more distractions and noise. The tendency of over generating ARG1s is also observed for DistilBERT models in the partitive dataset, and can not easily be improved by forcing one ARG1, which is consistent with the observations made for the result on \% dataset shown in \ref{sec:results-first-dataset}.
+As for the partitive dataset, it is also shown by Table \ref{tab:results-on-partitive-dataset} that the DistilBERT model performs better than the MaxEnt Baseline model which achieved an F1 score of \verb|0.4364|. The basic DistilBERT pipeline achieved an F1 score of  \verb|0.7945|. It is also observed that the POS tags and NG-BIO tags features didn't have statistically significant improvement on the performance of the model, achieving an F1 score of only \verb|0.7916|. Aside from that, when compared to the \% dataset, the decrease in performance is expected since the partitive dataset has more distractions and noise. The tendency of over generating ARG1s is also observed for DistilBERT models in the partitive dataset, and can not easily be improved by forcing one ARG1, which is consistent with the observations made for the result on \% dataset shown in \ref{sec:results-first-dataset}.
 
 \section{Conclusion}
 
@@ -271,7 +271,11 @@ This paper has discussed the semantic role labeling task of finding ARG1 of part
 
 By the results of our experiments on feature-enhanced pipelines, we also show that the DistilBERT model cannot be significantly improved by adding POS tags and NG-BIO tags features. This is consistently shown by our experiments on both \% dataset and partitive dataset. Besides, for the \% dataset, question-answering variant and forcing one ARG1 variant of DistilBERT models have not shown much significant improvement on the performance of the model either. However, the QA approach is indeed a novel perspective to look at the task of finding ARG1, reframing a SRL task into a QA task which is a more open and flexible task. The flexibility comes with the free choice of prompt question - a prompt question can be any text. Therefore, what could possibly be further investigated is the question prompt we use to ask the model to find ARG1.
 
+Based on the performance decrease observed in the partitive dataset, we also concluded that the ARG1 finding pipelines are generally sensitive to the noise in the partitive dataset. However, the DistilBERT models are relatively more robust to noise with 14.26\% decrease in performance compared to the baseline MaxEnt model's 34.06\% decrease.
+
 \section{Discussion and Future Work}
+
+
 
 \section*{References}
 
